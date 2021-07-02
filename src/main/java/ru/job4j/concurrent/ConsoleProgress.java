@@ -6,16 +6,17 @@ public class ConsoleProgress implements Runnable {
     public void run() {
         String[] mass = {"|", "/", "\\"};
         int flag = 0;
-        while (!Thread.currentThread().isInterrupted()) {
-            if (flag == 3) {
-                flag = 0;
-            }
-            System.out.print("\rLoading: " + mass[flag++]);
-            try {
+        try {
+            while (!Thread.currentThread().isInterrupted()) {
+                if (flag == 3) {
+                    flag = 0;
+                }
+                System.out.print("\rLoading: " + mass[flag++]);
                 Thread.sleep(500);
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
+
             }
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
         }
     }
 
