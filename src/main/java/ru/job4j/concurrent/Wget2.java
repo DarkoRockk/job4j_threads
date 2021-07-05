@@ -17,20 +17,19 @@ public class Wget2 implements Runnable {
 
     @Override
     public void run() {
-        String[] elements = url.split("/");
         try (BufferedInputStream in = new BufferedInputStream(new URL(url).openStream());
-             FileOutputStream fileOutputStream = new FileOutputStream(elements[elements.length - 1])) {
+             FileOutputStream fileOutputStream = new FileOutputStream("temp" + url)) {
             byte[] dataBuffer = new byte[1024];
             int bytesRead;
-            Date date1 = new Date();
+            Date start = new Date();
             while ((bytesRead = in.read(dataBuffer, 0, 1024)) != -1) {
                 fileOutputStream.write(dataBuffer, 0, bytesRead);
-                Date date2 = new Date();
-                long rsl = date2.getTime() - date1.getTime();
+                Date finish = new Date();
+                long rsl = finish.getTime() - start.getTime();
                 if (rsl < speed) {
                     Thread.sleep(speed - rsl);
                 }
-                date1 = new Date();
+                start = new Date();
             }
         } catch (IOException | InterruptedException e) {
             e.printStackTrace();
@@ -38,6 +37,9 @@ public class Wget2 implements Runnable {
     }
 
     public static void main(String[] args) throws InterruptedException {
+        if (args.length < 2 || args[0] == null || args[1] == null) {
+            throw new IllegalArgumentException();
+        }
         String url = args[0];
         int speed = Integer.parseInt(args[1]);
         Thread wget = new Thread(new Wget2(url, speed));
