@@ -13,7 +13,7 @@ public class SimpleBlockingQueueTest {
         Thread producer = new Thread(
                 () -> {
                     System.out.println(Thread.currentThread().getName() + " started");
-                    for (int i = 1; i < 120; i++) {
+                    for (int i = 1; i < 10; i++) {
                         queue.offer(i);
                     }
                 },
@@ -22,16 +22,16 @@ public class SimpleBlockingQueueTest {
         Thread consumer = new Thread(
                 () -> {
                     System.out.println(Thread.currentThread().getName() + " started");
-                    while (true) {
-                        System.out.println(queue.poll());
+                    for (int i = 1; i < 7; i++) {
+                        queue.poll();
                     }
                 },
                 "Consumer"
         );
         producer.start();
-        consumer.start();
         producer.join();
+        consumer.start();
         consumer.join();
+        assertThat(queue.getSize(), is(3));
     }
-
 }
