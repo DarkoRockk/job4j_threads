@@ -1,38 +1,37 @@
 package ru.job4j.storage;
 
 import net.jcip.annotations.ThreadSafe;
+
 import java.util.concurrent.ConcurrentHashMap;
 
 @ThreadSafe
 public class UserStorage {
 
-    private final ConcurrentHashMap<Integer, User> users;
-
-    public UserStorage(ConcurrentHashMap<Integer, User> users) {
-        this.users = users;
-    }
+    private final ConcurrentHashMap<Integer, User> users = new ConcurrentHashMap<>();
 
     public boolean add(User user) {
-        users.put(user.getId(), new User(user.getId(), user.getAmount()));
-        return true;
+        return users.putIfAbsent(user.getId(), user) == null;
     }
 
     public boolean update(User user) {
-        users.put(user.getId(), new User(user.getId(), user.getAmount()));
-        return true;
+        return users.replace(user.getId(), user) != null;
     }
 
     public boolean delete(User user) {
-        users.remove(user.getId());
-        return true;
+        return users.remove(user.getId(), user);
     }
 
-    public synchronized void transfer(int fromId, int toId, int amount) {
-        User user1 = new User(fromId, users.get(fromId).getAmount());
-        User user2 = new User(toId, users.get(toId).getAmount());
-        user1.setAmount(user1.getAmount() - amount);
-        user2.setAmount(user2.getAmount() + amount);
-        users.put(fromId, user1);
-        users.put(toId, user2);
+    public synchronized boolean transfer(int fromId, int toId, int amount) {
+        boolean rsl = false;
+        User user1 = users.get(fromId);
+        User user2 = users.get(toId);
+        if (user1 != null && user2 != null) {
+            if (user1.getAmount() >= amount) {
+                user1.setAmount(user1.getAmount() - amount);
+                user2.setAmount(user2.getAmount() + amount);
+                rsl = true;
+            }
+        }
+        return rsl;
     }
 }
