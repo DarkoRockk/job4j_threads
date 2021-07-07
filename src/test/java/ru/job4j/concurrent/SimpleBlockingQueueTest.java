@@ -23,7 +23,11 @@ public class SimpleBlockingQueueTest {
                 () -> {
                     System.out.println(Thread.currentThread().getName() + " started");
                     for (int i = 1; i < 7; i++) {
-                        queue.poll();
+                        try {
+                            queue.poll();
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
                     }
                 },
                 "Consumer"
