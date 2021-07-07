@@ -12,10 +12,6 @@ public class SimpleBlockingQueue<T> {
     private final Queue<T> queue = new LinkedList<>();
     private final int limit = 20;
 
-    public synchronized int getSize() {
-        return queue.size();
-    }
-
     public synchronized void offer(T value) throws InterruptedException {
         if (limit < queue.size()) {
             wait();
@@ -30,5 +26,9 @@ public class SimpleBlockingQueue<T> {
             wait();
         }
         return queue.poll();
+    }
+
+    public synchronized boolean isEmpty() {
+        return queue.isEmpty();
     }
 }
