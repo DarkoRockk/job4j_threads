@@ -10,15 +10,15 @@ public class SimpleBlockingQueue<T> {
 
     @GuardedBy("this")
     private final Queue<T> queue = new LinkedList<>();
-    private final int limit = 5;
+    private final int MAX_VALUE;
 
-    public synchronized void offer(T value) {
-        if (limit < queue.size()) {
-            try {
-                wait();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
+    public SimpleBlockingQueue(int MAX_VALUE) {
+        this.MAX_VALUE = MAX_VALUE;
+    }
+
+    public synchronized void offer(T value) throws InterruptedException {
+        if (MAX_VALUE < queue.size()) {
+            wait();
         }
         queue.add(value);
         notify();

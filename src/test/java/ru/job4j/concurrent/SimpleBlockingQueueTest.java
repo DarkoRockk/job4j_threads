@@ -13,12 +13,16 @@ public class SimpleBlockingQueueTest {
     @Test
     public void whenFetchAllThenGetIt() throws InterruptedException {
         final CopyOnWriteArrayList<Integer> buffer = new CopyOnWriteArrayList<>();
-        final SimpleBlockingQueue<Integer> queue = new SimpleBlockingQueue<>();
+        final SimpleBlockingQueue<Integer> queue = new SimpleBlockingQueue<>(5);
         Thread producer = new Thread(
                 () -> {
-                    IntStream.range(0, 10).forEach(
-                            queue::offer
-                    );
+                    for (int index = 0; index != 10; index++) {
+                        try {
+                            queue.offer(index);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                    }
                 }
         );
         producer.start();
