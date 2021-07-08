@@ -13,15 +13,11 @@ public class CASCount {
         int tmp;
         do {
             tmp = count.get();
-        } while (!count.compareAndSet(tmp, ++tmp));
+        } while (!count.compareAndSet(tmp, tmp + 1));
     }
 
     public int get() {
-        int tmp;
-        do {
-            tmp = count.get();
-        } while (!count.compareAndSet(tmp, tmp));
-        return tmp;
+        return count.get();
     }
 }
 
