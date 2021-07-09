@@ -42,4 +42,15 @@ public class CacheTest {
         cache.delete(model1);
         assertNull(cache.get(model1.getId()));
     }
+
+    @Test(expected = OptimisticException.class)
+    public void whenException() {
+        Cache cache = new Cache();
+        Base model1 = new Base(1, 0);
+        Base model2 = new Base(1, 1);
+        model2.setName("test");
+        cache.add(model1);
+        assertThat(cache.get(model1.getId()), is(model1));
+        cache.update(model2);
+    }
 }
