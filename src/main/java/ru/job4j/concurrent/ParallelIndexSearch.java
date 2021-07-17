@@ -1,32 +1,37 @@
 package ru.job4j.concurrent;
 
-import java.util.Arrays;
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.RecursiveTask;
 
 public class ParallelIndexSearch<T> extends RecursiveTask<Integer> {
     private final T[] array;
     private final T object;
+    private int start;
+    private int finish;
 
-    public ParallelIndexSearch(T[] array, T object) {
+    public ParallelIndexSearch(T[] array, T object, int start, int finish) {
         this.array = array;
         this.object = object;
+        this.start = start;
+        this.finish = finish;
     }
 
     @Override
     protected Integer compute() {
-        if (array.length <= 10) {
+        int rsl = -1;
+        if ((finish - start) <= 10) {
             for (int i = 0; i < array.length; i++) {
                 if (array[i].equals(object)) {
-                    return i;
+                    rsl = i;
+                    return rsl;
                 }
-
             }
         }
+        int middle = start + ((finish - start) / 2);
         ParallelIndexSearch<T> leftHalf
-                = new ParallelIndexSearch<>(Arrays.copyOfRange(array, 0, array.length / 2), object);
+                = new ParallelIndexSearch<>(array, object, start, middle);
         ParallelIndexSearch<T> rightHalf
-                = new ParallelIndexSearch<>(Arrays.copyOfRange(array, array.length / 2, array.length), object);
+                = new ParallelIndexSearch<>(array, object, middle + 1, finish);
 
         leftHalf.fork();
         rightHalf.fork();
@@ -37,7 +42,7 @@ public class ParallelIndexSearch<T> extends RecursiveTask<Integer> {
 
     public static <T> Integer findIndex(T[] array, T object) {
         ForkJoinPool forkJoinPool = new ForkJoinPool();
-        return forkJoinPool.invoke(new ParallelIndexSearch<>(array, object));
+        return forkJoinPool.invoke(new ParallelIndexSearch<>(array, object, 0, array.length - 1));
     }
 
     public static void main(String[] args) {
