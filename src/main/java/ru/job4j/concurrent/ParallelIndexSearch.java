@@ -16,11 +16,12 @@ public class ParallelIndexSearch<T> extends RecursiveTask<Integer> {
         this.finish = finish;
     }
 
-    public int checkArray(T[] array, T object) {
+    public int checkArray() {
         int rsl = -1;
         for (int i = 0; i < array.length; i++) {
             if (array[i].equals(object)) {
                 rsl = i;
+                break;
             }
         }
         return rsl;
@@ -29,7 +30,7 @@ public class ParallelIndexSearch<T> extends RecursiveTask<Integer> {
     @Override
     protected Integer compute() {
         if ((finish - start) <= 10) {
-            return checkArray(array, object);
+            return checkArray();
         }
         int middle = (start + finish) / 2;
         ParallelIndexSearch<T> leftHalf
@@ -54,9 +55,9 @@ public class ParallelIndexSearch<T> extends RecursiveTask<Integer> {
         for (int i = 0; i < users.length; i++) {
             users[i] = User.of("name" + i);
         }
-
-        User test = users[67];
-        System.out.println(users[5].equals(test));
+        User test = User.of("name5");
+        System.out.println(test.toString());
+        System.out.println(users[5].toString());
         System.out.println(findIndex(users, test));
     }
 }
